@@ -1,0 +1,15 @@
+- name: setting mysql to server
+  hosts: db
+  user: vagrant
+  sudo: yes
+  vars:
+    app_name: twitter-imitation
+    environtment: vagrant
+    home: "/home/{{user}}"
+    user: vagrant
+  vars_files:
+    - private.yml
+    - vars/mysql.yml
+  roles:
+    - common
+    - { role: galaxy/geerlingguy.mysql }

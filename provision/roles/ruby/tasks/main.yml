@@ -1,0 +1,53 @@
+- name: rbenv install
+  git:
+    repo: https://github.com/sstephenson/rbenv.git
+    dest: /home/vagrant/.rbenv/
+- name: ruby-build install
+  git:
+    repo: https://github.com/sstephenson/ruby-build.git
+    dest: /home/vagrant/.rbenv/plugins/ruby-build/
+- name: make rbenv dir
+  file:
+    path: /home/vagrant/.rbenv
+    owner: vagrant
+    state: directory
+    recurse: yes
+
+- name: Add ~.rbenv/bin to PATH
+  lineinfile:
+    dest: "~/.bashrc"
+    line: "export PATH=$HOME/.rbenv/bin:$PATH"
+  sudo: no
+
+- name: Eval rbenv init in ~/.profile
+  lineinfile:
+    dest: "~/.bashrc"
+    line: 'eval "$(rbenv init -)"'
+  sudo: no
+
+- name: enable sudo rbenv
+  # lineinfile:
+  #   dest: "/etc/sudoers"
+  #   line: 'Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin'
+  replace:
+      dest: /etc/sudoers
+      regexp: "^Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin$"
+      replace: "Defaults    secure_path = /home/vagrant/.rbenv/shims:/home/vagrant/.rbenv/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin"
+
+- name: source bash
+  shell: source ~/.bashrc
+  sudo: no
+
+- name: setup ruby 2.3.0
+  shell: |
+    /bin/bash -lc "rbenv install 2.3.0"
+    /bin/bash -lc "rbenv rehash"
+    /bin/bash -lc "rbenv global 2.3.0"
+  sudo: no
+
+- name: bundler install
+  gem:
+    name: bundler
+    executable: /home/vagrant/.rbenv/shims/gem
+    user_install: false
+  sudo: no

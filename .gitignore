@@ -1,0 +1,14 @@
+.DS_Store
+*.swp
+.swp
+
+acceptance_config.yml
+boxes/*
+.vagrant
+/.vagrant
+/website/docs/.vagrant
+/website/www/.vagrant
+/vagrant-spec.config.rb
+provision/prod_hosts
+provision/roles/galaxy/*
+provision/private.yml

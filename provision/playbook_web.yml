@@ -1,0 +1,17 @@
+- name: setting sinatra to server
+  hosts: web
+  user: vagrant
+  sudo: yes
+  vars:
+    app_name: twitter-imitation
+    environtment: vagrant
+    home: "/home/{{user}}"
+    user: vagrant
+    src_dir: '/usr/local/src'
+    ruby_version: '2.3.0'
+
+    root_dir: /var/www/twitter-imitation/
+  roles:
+    - common
+    - ruby
+    - passenger

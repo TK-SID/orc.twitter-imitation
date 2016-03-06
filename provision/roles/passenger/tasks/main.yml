@@ -1,0 +1,49 @@
+- name: install dependency
+  yum: name={{ item }} state=installed
+  with_items:
+    - curl-devel
+    - httpd-devel
+
+- name: install passenger
+  gem:
+    name: passenger
+    executable: /home/vagrant/.rbenv/shims/gem
+    user_install: false
+  sudo: no
+
+- name: install apache2 module
+  shell: /home/vagrant/.rbenv/shims/passenger-install-apache2-module --auto
+
+- name: generate passenger.conf file
+  shell: /home/vagrant/.rbenv/shims/passenger-install-apache2-module --snippet > /etc/httpd/conf.d/passenger.conf
+
+- name: make root dir
+  file:
+    path: "{{ root_dir }}"
+    owner: vagrant
+    state: directory
+    recurse: yes
+
+- name: setup virtualhost
+  lineinfile:
+    dest: "/etc/httpd/conf.d/passenger.conf"
+    line: |
+
+      <VirtualHost *:80>
+        ServerName twitter-imitation
+        DocumentRoot "{{ root_dir }}"public
+        RackEnv production
+      </VirtualHost>
+
+- name: enable virtualhost
+  replace:
+      dest: /etc/httpd/conf.d/passenger.conf
+      regexp: "#NameVirtualHost *:80"
+      replace: "#NameVirtualHost *:80"
+  notify: restart httpd
+
+- name: bundle install
+  shell: bundle install
+  args:
+    chdir: "{{ root_dir }}"
+  sudo: no
